@@ -69,7 +69,7 @@ __device__ T warpScanInclusive(uint mask, T data)
     #pragma unroll
     for (int i = 1; i <= (WARP_SIZE / 2); i *= 2)
     {
-        const T val = shfl_up_sync(mask, data, i);
+        const T val = __shfl_up_sync(mask, data, i);
         if (laneId >= i)
               data += val;
     }

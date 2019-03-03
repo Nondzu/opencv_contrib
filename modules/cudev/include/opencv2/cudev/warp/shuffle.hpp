@@ -173,20 +173,20 @@ __device__ __forceinline__ T compatible_shfl_up(T val, uint delta, int width = w
     const int residual = block_size & (warpSize - 1);
 
     if (0 == residual)
-        return shfl_up_sync(0xFFFFFFFFU, val, delta, width);
+        return __shfl_up_sync(0xFFFFFFFFU, val, delta, width);
     else
     {
         const int n_warps = divUp(block_size, warpSize);
         const int warp_id = Warp::warpId();
 
         if (warp_id < n_warps - 1)
-            return shfl_up_sync(0xFFFFFFFFU, val, delta, width);
+            return __shfl_up_sync(0xFFFFFFFFU, val, delta, width);
         else
         {
             // We are at the last threads of a block whose number of threads
             // is not a multiple of the warp size
             uint mask = (1LU << residual) - 1;
-            return shfl_up_sync(mask, val, delta, width);
+            return __shfl_up_sync(mask, val, delta, width);
         }
     }
 #endif
@@ -197,7 +197,7 @@ __device__ __forceinline__ T compatible_shfl_up(T val, uint delta, int width = w
 #if __CUDACC_VER_MAJOR__ >= 9
 
 template <typename T>
-__device__ __forceinline__ T shfl_up_sync(uint mask, T val, uint delta, int width = warpSize)
+__device__ __forceinline__ T __shfl_up_sync(uint mask, T val, uint delta, int width = warpSize)
 {
     return (T) __shfl_up_sync(mask, val, delta, width);
 }
